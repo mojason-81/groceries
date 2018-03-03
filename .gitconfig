@@ -1,0 +1,12 @@
+[user]
+    name = Jason Force
+    email = russell.jf@protonmail.com
+[core]
+    editor = nvim
+[alias]
+    br = branch
+    co = checkout
+    st = status
+    tst = status
+[push]
+    default = simple
