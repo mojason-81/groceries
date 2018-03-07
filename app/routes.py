@@ -1,6 +1,7 @@
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
-from app.models import User
+from app.forms import AddGroceryForm, AddStoreForm
+from app.models import User, Grocery, Store
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
@@ -9,48 +10,12 @@ from werkzeug.urls import url_parse
 @app.route('/index')
 @login_required
 def index():
-    stores = [
-        {
-            'name': 'Aldi',
-            'groceries': [{
-                'name': 'Apples',
-                'price': 199,
-                'count': 1,
-                'unit': 'bag',
-                'total': 4
-               },{
-                'name': 'Sliced Cheese',
-                'price': 599,
-                'count': 2,
-                'unit': 'pkg',
-                'total': 6
-               },{
-                'name': 'Milk',
-                'price': 399,
-                'count': 3,
-                'unit': '1/2 gal',
-                'total': 10}
-            ]
-        },{
-            'name': 'Costco',
-            'groceries': [{
-                'name': 'Green Beans',
-                'price': 199,
-                'count': 1,
-                'unit': 'bag',
-                'total': 4
-               },{
-                'name': 'Mac & Cheese',
-                'price': 199,
-                'count': 4,
-                'unit': 'box',
-                'total': 10}
-            ]
-        }
-    ]
+    stores = current_user.stores
+    groceries = current_user.groceries
     return render_template('index.html',
                            title='Home',
-                           stores=stores)
+                           stores=stores,
+                           groceries=groceries)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -106,3 +71,30 @@ def edit_profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+@app.route('/add_grocery', methods=['GET', 'POST'])
+@login_required
+def add_grocery():
+    form = AddGroceryForm()
+    if form.validate_on_submit():
+        grocery = Grocery(name=form.name.data,
+                          price=form.price.data,
+                          count=form.count.data)
+        current_user.add_grocery(grocery)
+        flash('Your grocery has been added.')
+        return redirect(url_for('index'))
+    elif request.method == 'GET':
+        return render_template('add_grocery.html', title='Add Grocery',
+                               form=form)
+
+@app.route('/add_store', methods=['GET', 'POST'])
+@login_required
+def add_store():
+    form = AddStoreForm()
+    if form.validate_on_submit():
+        store = Store(name=form.name.data)
+        current_user.add_store(store)
+        flash('Your store has been added.')
+        return redirect(url_for('index'))
+    elif request.method == 'GET':
+        return render_template('add_store.html', title='Add Store', form=form)

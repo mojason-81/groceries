@@ -35,6 +35,31 @@ class User(UserMixin, db.Model):
                              secondary=grocery_meal_map,
                              backref='user', lazy='dynamic')
 
+    def add_grocery(self, grocery):
+        grocery.price = int(float(grocery.price) * 100)
+        self.groceries.append(grocery)
+        db.session.add(grocery)
+        db.session.add(self)
+        db.session.commit()
+
+    def add_meal(self, meal):
+        self.meals.append(meal)
+        db.session.add(meal)
+        db.session.add(self)
+        db.session.commit()
+
+    def add_menu(self, menu):
+        self.menus.append(menu)
+        db.session.add(menu)
+        db.session.add(self)
+        db.session.commit()
+
+    def add_store(self, store):
+        self.stores.append(store)
+        db.session.add(store)
+        db.session.add(self)
+        db.session.commit()
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -52,6 +77,12 @@ class Grocery(db.Model):
     stores = db.relationship('Store',
                              secondary=grocery_meal_map)
 
+    def add_store(self, store):
+        self.stores.append(store)
+        db.session.add(store)
+        db.session.add(self)
+        db.session.commit()
+
 class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), index=True)
@@ -60,14 +91,31 @@ class Meal(db.Model):
     menus = db.relationship('Menu',
                             secondary=grocery_meal_map)
 
+    def add_menu(self, menu):
+        self.menus.append(menu)
+        db.session.add(menu)
+        db.session.add(self)
+        db.session.commit()
+
 class Menu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meals = db.relationship('Meal',
                             secondary=grocery_meal_map)
 
+    def add_meal(self, meal):
+        self.meals.append(meal)
+        db.session.add(meal)
+        db.session.add(self)
+        db.session.commit()
+
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(60), index=True)
     groceries = db.relationship('Grocery',
                                 secondary=grocery_meal_map)
+
+    def add_grocery(self, grocery):
+        self.groceries.append(grocery)
+        db.session.add(meal)
+        db.session.add(self)
+        db.session.commit()
