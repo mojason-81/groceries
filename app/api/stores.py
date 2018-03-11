@@ -2,23 +2,24 @@ from flask import jsonify, request, url_for, g
 from app import db
 from app.api.auth import token_auth
 from app.api.errors import bad_request
-from app.models import User, Grocery
+from app.models import User, Store
 from app.api import bp
 
-@bp.route('/users/<int:id>/groceries', methods=['GET'])
+@bp.route('/users/<int:id>/stores', methods=['GET'])
 @token_auth.login_required
-def get_groceries(id):
+def get_stores(id):
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 10, type=int), 100)
-    data = Grocery.to_collection_dict(Grocery.query,
+    data = Store.to_collection_dict(Store.query,
                                       g.current_user.id,
                                       page,
                                       per_page,
-                                      'api.get_groceries')
+                                      'api.get_stores')
     return jsonify(data)
 
-@bp.route('/users/<int:user_id>/groceries/<int:id>', methods=['GET'])
+@bp.route('/users/<int:user_id>/stores/<int:id>', methods=['GET'])
 @token_auth.login_required
-def get_grocery(user_id, id):
-    # FIXME: only return grocery if it belongs to user.
-    return jsonify(Grocery.query.get_or_404(id).to_dict())
+def get_store(user_id, id):
+    # FIXME: only return store if it belongs to user
+    return jsonify(Store.query.get_or_404(id).to_dict())
+

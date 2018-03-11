@@ -186,7 +186,7 @@ class Grocery(PaginatedAPIMixin, db.Model):
         db.session.add(meal)
         db.session.commit()
 
-    def to_dict(self, include_email=False):
+    def to_dict(self,):
         data = {
             'id':self.id,
             'name': self.name,
@@ -200,16 +200,7 @@ class Grocery(PaginatedAPIMixin, db.Model):
                 'stores': '<stores>'
             }
         }
-        if include_email:
-            data['email'] = self.email
         return data
-
-    def from_dict(self, data, new_user=False):
-        for field in ['username', 'email']:
-            if field in data:
-                setattr(self, field, data[field])
-            if new_user and 'password' in data:
-                self.set_password(data['password'])
 
     def __repr__(self):
         # TODO: maybe return a jsonify'd dictionary?
@@ -219,7 +210,7 @@ class Grocery(PaginatedAPIMixin, db.Model):
                                                                                          self.count,
                                                                                          '<stores>')
 
-class Meal(db.Model):
+class Meal(PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer,  db.ForeignKey('user.id'))
     name = db.Column(db.String(60), index=True)
@@ -228,6 +219,20 @@ class Meal(db.Model):
     menus = db.relationship('Menu',
                             secondary=meal_menu_map,
                             back_populates='meals')
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            '_links': {
+                'self': url_for('api.get_meal', user_id=self.user.id, id=self.id),
+                'user': url_for('api.get_user', id=self.user.id),
+                'menus': '<menus>',
+                'groceries': '<groceries>'
+            }
+        }
+        return data
 
     def __repr__(self):
         # TODO: maybe return a jsonify'd dictionary?
@@ -239,7 +244,7 @@ class Meal(db.Model):
         db.session.add(self)
         db.session.commit()
 
-class Menu(db.Model):
+class Menu(PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer,  db.ForeignKey('user.id'))
     name = db.Column(db.String(60), default="Menu for {}".format(date.today()))
@@ -254,6 +259,21 @@ class Menu(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def to_dict(self):
+        data = {
+            'id':self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'date': self.date,
+            '_links': {
+                'self': url_for('api.get_menu', user_id=self.user.id, id=self.id),
+                'user': url_for('api.get_user', id=self.user_id),
+                'groceries': '<groceries>',
+                'meals': '<meals>',
+            }
+        }
+        return data
+
     def __repr__(self):
         # TODO: maybe return a jsonify'd dictionary?
         return "<Meal: {},\n user_id: {},\n name: {}\n date: {}>".format(self.id,
@@ -261,7 +281,7 @@ class Menu(db.Model):
                                                                           self.name,
                                                                           self.date)
 
-class Store(db.Model):
+class Store(PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer,  db.ForeignKey('user.id'))
     name = db.Column(db.String(60))
@@ -273,6 +293,19 @@ class Store(db.Model):
         db.session.add(meal)
         db.session.add(self)
         db.session.commit()
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            '_links': {
+                'self': url_for('api.get_meal', user_id=self.user.id, id=self.id),
+                'user': url_for('api.get_user', id=self.user.id),
+                'groceries': '<groceries>'
+            }
+        }
+        return data
 
     def __repr__(self):
         # TODO: maybe return a jsonify'd dictionary?
