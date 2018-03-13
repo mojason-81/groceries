@@ -1,12 +1,5 @@
 <template>
   <div>
-    <section class="hero is-primary">
-      <div class="hero-body">
-        <div class="container has-text-centered">
-          <h2 class="title">Page Title Goes Here</h2>
-        </div>
-      </div>
-    </section>
     <section class="section">
       <div class="container">
         <div class="card">
@@ -35,6 +28,7 @@
         this.msg = this.getSomething()
       },
       getSomething () {
+        // FIXME: this is all wrong
         const path = `http://localhost:5000/api/users/1/menus`
         axios.get(path,
           {
