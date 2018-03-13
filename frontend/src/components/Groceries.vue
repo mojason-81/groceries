@@ -27,7 +27,10 @@ export default {
       console.log(sessionStorage.blah);
       this.$http({
         method: 'get',
-        url: `/users/${localStorage.current_user_id}/groceries`
+        url: `/users/${localStorage.current_user_id}/groceries`,
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.token
+        }
       })
         .then((response) => { this.msg = response.data })
         .catch( error => { console.log(error) })
