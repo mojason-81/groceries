@@ -23,9 +23,12 @@
           <a class="navbar-item" href="#">
             Stores
           </a>
-          <hr class="navbar-divider">
-          <a class="navbar-item" href="#">
+          <hr v-if="loggedIn()" class="navbar-divider">
+          <a v-if="loggedIn()" class="navbar-item">
             Profile
+          </a>
+          <a v-if="loggedIn()" v-on:click="logOut()" class="navbar-item">
+            Log Out
           </a>
         </div>
       </div>
@@ -55,6 +58,36 @@ export default {
   data() {
     return {
       title: 'This needs fixed'
+    }
+  },
+
+  methods: {
+    loggedIn() {
+      console.log("loggedIn Called")
+      if (localStorage.token != null && localStorage.current_user_id != null) {
+        return true
+      }
+      return false
+    },
+
+    logOut() {
+      this.$http({
+        method: 'delete',
+        url: '/tokens',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.token
+        }
+      })
+        .then((response) => { this.logOutSuccessful(response) })
+        .catch( error => { console.log(error) })
+    },
+
+    logOutSuccessful(res) {
+      // TODO: Flash success message
+      localStorage.removeItem('token')
+      localStorage.removeItem('current_user_id')
+      this.error = false
+      this.$router.replace(this.$route.query.redirect || '/login')
     }
   }
 }

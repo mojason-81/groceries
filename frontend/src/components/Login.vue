@@ -50,12 +50,6 @@ export default {
         .catch(() => this.loginFailed())
     },
 
-    logout() {
-      localStorage.token = ''
-      localStorage.current_user_id = ''
-      this.$router.replace(this.$router.query.redirect)
-    },
-
     loginSuccessful(res) {
       if (!res.data.token) {
         this.loginFailed()
