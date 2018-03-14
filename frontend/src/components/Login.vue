@@ -1,27 +1,29 @@
 <template>
-  <div class="login-wrapper border border-light">
-    <form class="form-signin" @submit.prevent="login">
-      <h2 class="form-signin-heading">Please sign in</h2>
+  <div class="columns">
+    <div class="column is-5">
+      <form class="form-signin" @submit.prevent="login">
+        <h2 class="subtitle">Please sign in</h2>
 
-      <div class="field">
-        <label for="inputUsername" class="label">Username</label>
-        <div class="control">
-          <input v-model="username" type="text" id="inputUsername" class="input" placeholder="Username" required autofocus>
+        <div class="field">
+          <label for="inputUsername" class="label">Username</label>
+          <div class="control">
+            <input v-model="username" type="text" id="inputUsername" class="input" placeholder="Username" required autofocus>
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <label for="inputPassword" class="label">Password</label>
-        <div class="control">
-          <input v-model="password" type="password" id="inputPassword" class="input" placeholder="Password" required>
+        <div class="field">
+          <label for="inputPassword" class="label">Password</label>
+          <div class="control">
+            <input v-model="password" type="password" id="inputPassword" class="input" placeholder="Password" required>
+          </div>
         </div>
-      </div>
-      <div class="field">
-        <div class="control">
-          <button class="button is-link" type="submit">Sign in</button>
+        <div class="field">
+          <div class="control">
+            <button class="button is-link" type="submit">Sign in</button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -72,6 +74,9 @@ export default {
       delete localStorage.token
       this.$router.replace(this.$route.query.redirect)
     }
+  },
+  created() {
+    // this.$root.title = 'Login'
   }
 }
 </script>

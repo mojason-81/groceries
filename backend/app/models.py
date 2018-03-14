@@ -139,7 +139,7 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
             return None
         return user
 
-    def to_dict(self, include_email=False):
+    def to_dict(self, include_email=False, include_token=False):
         data = {
             'id':self.id,
             'username': self.username,
@@ -153,6 +153,8 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
         }
         if include_email:
             data['email'] = self.email
+        if include_token:
+            data['token'] = self.get_token()
         return data
 
     def from_dict(self, data, new_user=False):
