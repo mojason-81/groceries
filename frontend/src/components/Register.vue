@@ -65,7 +65,7 @@ export default {
         url: '/users',
         data: {
           username: this.username,
-          email: this.password,
+          email: this.email,
           password: this.password
         }
       })

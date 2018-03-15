@@ -154,8 +154,9 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
         if include_email:
             data['email'] = self.email
         if include_token:
-            # FIXME: this token isn't yet committed.
             data['token'] = self.get_token()
+            db.session.add(self)
+            db.session.commit()
         return data
 
     def from_dict(self, data, new_user=False):
