@@ -76,13 +76,10 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
 
     def add_groceries(self, groceries):
         for grocery in groceries:
-            grocery.price = int(float(grocery.price) * 100)
-            self.groceries.append(grocery)
-            db.session.add(grocery)
-            db.session.add(self)
-        db.session.commit()
+            self.add_grocery(grocery)
 
     def add_grocery(self, grocery):
+        # TODO: should this math be done on the front-end?
         grocery.price = int(float(grocery.price) * 100)
         self.groceries.append(grocery)
         db.session.add(grocery)
@@ -190,11 +187,11 @@ class Grocery(PaginatedAPIMixin, db.Model):
         db.session.add(meal)
         db.session.commit()
 
-    def to_dict(self,):
+    def to_dict(self):
         data = {
             'id':self.id,
             'name': self.name,
-            'price': self.price / 100,
+            'price': self.price,
             'count': self.count,
             '_links': {
                 'self': url_for('api.get_grocery', user_id=self.user.id, id=self.id),
@@ -205,6 +202,11 @@ class Grocery(PaginatedAPIMixin, db.Model):
             }
         }
         return data
+
+    def from_dict(self, data):
+        for field in ['name', 'price', 'count', 'user_id', 'store_id']:
+            if field in data:
+                setattr(self, field, data[field])
 
     def __repr__(self):
         # TODO: maybe return a jsonify'd dictionary?

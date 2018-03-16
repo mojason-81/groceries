@@ -57,7 +57,9 @@ export default {
   name: 'App',
   data() {
     return {
-      title: 'This needs fixed'
+      title: 'This needs fixed',
+      groceries: '',
+      stores: ''
     }
   },
 
@@ -79,7 +81,7 @@ export default {
         }
       })
         .then((response) => { this.logOutSuccessful(response) })
-        .catch( error => { console.log(error) })
+        .catch((error) => { this.logoutFailed(error) })
     },
 
     logOutSuccessful(res) {
@@ -88,6 +90,12 @@ export default {
       localStorage.removeItem('current_user_id')
       this.error = false
       this.$router.replace(this.$route.query.redirect || '/login')
+    },
+
+    logoutFailed(e) {
+      console.log(e)
+      localStorage.removeItem('token')
+      localStorage.removeItem('current_user_id')
     }
   }
 }
